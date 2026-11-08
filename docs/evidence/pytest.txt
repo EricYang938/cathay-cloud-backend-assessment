@@ -1,0 +1,34 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0
+rootdir: /workspace/scratch/2a19f32b633d/cathay-cloud-backend-assessment
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0
+collected 61 items
+
+tests/integration/test_http.py ..                                        [  3%]
+tests/unit/test_api.py .............................................     [ 77%]
+tests/unit/test_weather.py ..............                                [100%]
+
+- generated xml file: /workspace/scratch/2a19f32b633d/cathay-cloud-backend-assessment/docs/evidence/test-results.xml -
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.14-final-0 _______________
+
+Name                           Stmts   Miss  Cover   Missing
+------------------------------------------------------------
+src/__init__.py                    0      0   100%
+src/app.py                        55      1    98%   21
+src/handlers/__init__.py           0      0   100%
+src/handlers/router.py            44      1    98%   19
+src/models/__init__.py             0      0   100%
+src/models/validation.py          64      0   100%
+src/repositories/__init__.py       0      0   100%
+src/repositories/dynamodb.py      46      2    96%   69-76
+src/services/__init__.py           0      0   100%
+src/services/tasks.py             15      0   100%
+src/services/weather.py           28      1    96%   35
+src/utils/__init__.py              0      0   100%
+src/utils/errors.py                7      0   100%
+------------------------------------------------------------
+TOTAL                            259      5    98%
+============================== 61 passed in 6.50s ==============================

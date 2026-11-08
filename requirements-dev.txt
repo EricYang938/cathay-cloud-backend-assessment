@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest==9.2.0
+pytest-cov==7.1.0
+moto[dynamodb,server]==5.2.5
+ruff==0.17.4
+aws-sam-cli==1.171.0

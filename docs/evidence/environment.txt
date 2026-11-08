@@ -1,0 +1,9 @@
+Date: 2026-11-08 (Asia/Taipei)
+Python: 3.12.14
+GitHub CLI: not logged in
+Connected GitHub account: cfla999-tech (target EricYang938 mismatch; no writes)
+Target repository query: 404 (not proof of nonexistence)
+AWS SDK credential chain: no credentials available (EC2 metadata disabled)
+Docker executable: absent; compose path NOT TESTED
+Chromium browser launch: BLOCKED by socket Operation not permitted
+Open-Meteo direct query: timeout; mock tests PASS

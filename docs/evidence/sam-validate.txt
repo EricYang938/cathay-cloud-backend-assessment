@@ -1,0 +1,1 @@
+/workspace/scratch/2a19f32b633d/cathay-cloud-backend-assessment/template.yaml is a valid SAM Template

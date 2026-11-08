@@ -1,0 +1,1 @@
+PASS: import SAM-built src.app.lambda_handler and GET /health returned 200

@@ -1,0 +1,25 @@
+digraph G {
+      graph [rankdir=TB, bgcolor="#f8fbf8", pad="0.4",
+             label="CI / CD | configured, remote runs blocked",
+             labelloc=t, fontsize=22];
+      node [shape=box, style="rounded,filled", fillcolor=white, color="#7aa991",
+            fontname="DejaVu Sans",
+            margin="0.2,0.15"];
+      edge [fontname="DejaVu Sans", fontsize=10];
+      push [label="Push / Pull Request"];
+      install [label="Python 3.12 / locked dependencies"];
+      checks [label="Ruff lint + format / pytest\nSAM validate --lint + build"];
+      artifacts [label="Upload test results"];
+      deploytrigger [label="main push / manual dispatch"];
+      verify [label="Re-run lint / tests / template validation"];
+      gate [shape=diamond,label="ENABLE_AWS_DEPLOY=true\n+ main + aws-demo environment"];
+      oidc [label="Existing scoped AWS OIDC role"];
+      deploy [label="SAM build / deploy"];
+      smoke [label="HTTP CRUD smoke test"];
+      push -> install -> checks -> artifacts;
+      deploytrigger -> verify -> gate;
+      gate -> oidc [label="yes"];
+      oidc -> deploy -> smoke;
+      skip [label="Skip deployment (default)"];
+      gate -> skip [label="no"];
+    }

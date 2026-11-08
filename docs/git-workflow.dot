@@ -1,0 +1,21 @@
+digraph G {
+      graph [rankdir=TB, bgcolor="#f8fbf8", pad="0.4",
+             label="GitHub Flow | solo workflow design",
+             labelloc=t, fontsize=22];
+      node [shape=box, style="rounded,filled", fillcolor=white, color="#7aa991",
+            fontname="DejaVu Sans",
+            margin="0.2,0.15"];
+      edge [fontname="DejaVu Sans", fontsize=10];
+      main [label="main: stable baseline"];
+      feature [label="feature / fix / docs branch"];
+      pr [label="Pull Request: scope + evidence"];
+      ci [label="CI + code review"];
+      decision [shape=diamond,label="Checks pass?"];
+      merge [label="Squash merge into main"];
+      deploy [label="Opt-in deployment + smoke test"];
+      rollback [label="Revert commit via PR / redeploy"];
+      main -> feature -> pr -> ci -> decision;
+      decision -> feature [label="revise"];
+      decision -> merge [label="approve"];
+      merge -> deploy -> rollback;
+    }

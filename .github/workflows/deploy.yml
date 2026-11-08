@@ -1,0 +1,56 @@
+name: Deploy demo (opt-in)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: aws-demo-deploy
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-lock.txt
+      - run: ruff check . && ruff format --check .
+      - run: pytest
+      - run: sam validate --lint --region ap-northeast-1
+        env:
+          AWS_EC2_METADATA_DISABLED: 'true'
+  deploy:
+    if: vars.ENABLE_AWS_DEPLOY == 'true' && github.ref == 'refs/heads/main'
+    needs: verify
+    environment: aws-demo
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-northeast-1
+      STACK_NAME: cathay-cloud-demo
+      DEMO_TOKEN: ${{ secrets.DEMO_TOKEN }}
+      ALLOWED_ORIGIN: ${{ vars.ALLOWED_ORIGIN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-lock.txt
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-northeast-1
+      - run: sam build
+      - name: Deploy
+        run: |
+          set +x
+          sam deploy --stack-name "$STACK_NAME" --resolve-s3 --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides "AllowedOrigin=$ALLOWED_ORIGIN" "DemoToken=$DEMO_TOKEN"
+      - name: Smoke test
+        run: |
+          API_URL=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" --query 'Stacks[0].Outputs[?OutputKey==`ApiEndpoint`].OutputValue' --output text)
+          python -m scripts.smoke_test "$API_URL"
