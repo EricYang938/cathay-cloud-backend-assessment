@@ -1,0 +1,7 @@
+PASS: git clone --no-hardlinks <local repository> /tmp/cathay-clone-review
+Cloning into '/tmp/cathay-clone-review'...
+done.
+.............................................................            [100%]
+61 passed in 5.97s
+
+Scope: local clone and source reconstruction; target GitHub clone remains BLOCKED.

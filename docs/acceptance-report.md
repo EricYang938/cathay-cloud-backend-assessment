@@ -13,7 +13,7 @@
 | 主要功能說明 | Mandatory | PASS | [API 文件](api-documentation.md)、src/ | 端點與回應對照實作 |
 | 雲端架構圖完整且可閱讀 | Mandatory | PASS | [PNG](architecture.png)、[設計說明](architecture.md) | 明確標示未部署與 AWS／外部邊界 |
 | AWS 選型理由完整 | Mandatory | PASS | README 選型表、architecture.md | 含 Lambda/EC2、DynamoDB/RDS 與成本取捨 |
-| Git Repository 或 ZIP | Mandatory | PASS | 完整 ZIP，包含本地 .git 歷史 | GitHub 遠端受帳號限制；ZIP 解壓／clone 驗證另見 packaging 證據 |
+| Git Repository 或 ZIP | Mandatory | PASS | 完整 ZIP，包含本地 .git 歷史 | GitHub 遠端受帳號限制；本地 clone 後 61 項測試通過，見 evidence/packaging.txt |
 | 前端程式與實際操作 | Bonus | BLOCKED | frontend/、[瀏覽器啟動紀錄](evidence/frontend-run.txt) | JS 語法檢查通過；Chromium socket 被環境拒絕，未驗證互動／響應式，無操作截圖 |
 | 第三方 RESTful API 真實整合 | Bonus | BLOCKED | src/services/weather.py、[live 結果](evidence/weather-live.txt) | mock 含正常／timeout／HTTP errors；實際網路逾時，不能判 PASS |
 | CI/CD 圖與實際配置一致 | Bonus | PASS | [流程圖](cicd.png)、.github/workflows/ | 人工對照檔案；不是遠端執行成功 |
