@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-11-08T12:29:49.867896+00:00",
+  "scope": "Real HTTPS Open-Meteo geocoding and current weather; no AWS",
+  "city": "Taipei",
+  "status": "PASS",
+  "result": {
+    "city": "Taipei",
+    "country": "Taiwan",
+    "latitude": 25.05306,
+    "longitude": 121.52639,
+    "current": {
+      "time": "2026-11-08T12:15",
+      "interval": 900,
+      "temperature_2m": 22.1,
+      "weather_code": 0,
+      "wind_speed_10m": 9.4
+    },
+    "units": {
+      "time": "iso8601",
+      "interval": "seconds",
+      "temperature_2m": "°C",
+      "weather_code": "wmo code",
+      "wind_speed_10m": "km/h"
+    },
+    "timezone": "UTC",
+    "source": "Open-Meteo",
+    "source_url": "https://open-meteo.com/"
+  }
+}

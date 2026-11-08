@@ -9,7 +9,9 @@
 - Repository 已存在且以 EricYang938 授權讀寫；目前 private，面試官需取得存取權或另收 ZIP。
 - [原始版本 CI 成功](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42474750413)：quality 的 dependency install、Ruff、pytest、SAM validate/build、artifact 全部成功。
 - [舊 opt-in workflow](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42474750388)：verify 成功，但 **deploy job skipped**，不是 AWS 成功。本次移除該 workflow，沒有 AWS credentials／deploy 步驟。
-- 本次修正的前端與 live-weather 結果以本分支的 Actions artifacts 為準；下列未完成實測者不預先標 PASS。
+- [本次修正的真實 CI 成功](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42480510741)，受測 commit：`eb642eaa672b6007a4012411e5b62a6b0c6ed0bb`。quality、frontend、weather-live 全部成功；已額外核實 weather step 本身成功且 JSON.status=PASS，不只看 workflow 綠燈。
+- [修正 PR #1](https://github.com/EricYang938/cathay-cloud-backend-assessment/pull/1) 提供實際 feature → PR → CI 紀錄；未宣稱其他人已 review 或合併。
+- CI runner：Python 3.12、Chromium；前端真實本地 HTTP／Moto 操作通過，Open-Meteo 真實 HTTPS 回應通過。這不涉及 AWS 部署。
 
 ## Requirement Matrix
 
@@ -20,9 +22,9 @@
 | 雲端架構圖 | Mandatory | PASS | architecture.png / svg / dot | 清楚標示未部署及 AWS 邊界 |
 | AWS 服務選型理由 | Mandatory | PASS | README 選型表、architecture.md | Lambda/EC2、DynamoDB/RDS、成本與維運取捨 |
 | Git Repo 或 ZIP | Mandatory | PASS | 本 Repository、本地 Git 歷史 | private，需作者提供面試官讀取權或 ZIP |
-| 前端 CRUD／錯誤／loading／響應式 | Bonus | NOT TESTED | frontend/、scripts/verify_frontend.py | 本地 Chromium 受限；已加入真實 CI 瀏覽器驗證，等待結果 |
-| 第三方 RESTful API | Bonus | BLOCKED | weather.py、verify_weather.py、weather-live.json | mock 通過，先前本地 live 逾時；新增 CI live check，依 artifact 結果更新 |
-| CI 與流程圖 | Bonus | PASS | .github/workflows/ci.yml、cicd.png、真實 CI URL | 本次新增 jobs 需再核對實際結果 |
+| 前端 CRUD／錯誤／loading／響應式 | Bonus | PASS | evidence/frontend.json、screenshots/desktop.png、screenshots/mobile.png | CI Chromium CRUD、獨立 HTTP 狀態讀回、錯誤及 390px 無橫向溢位通過 |
+| 第三方 RESTful API | Bonus | PASS | evidence/weather-live-ci.json、weather-evidence artifact | 2026-11-08 20:29（台灣）真實 Taipei 查詢成功；本地逾時歷史另存 |
+| CI 與流程圖 | Bonus | PASS | .github/workflows/ci.yml、cicd.png、evidence/github-revision-ci.json | 新版 quality／frontend／weather-live 實際結果已核對 |
 | AWS CD | Bonus | NOT IMPLEMENTED | 無 deploy workflow | 依使用者決定排除，本次不做 |
 | 多人 Git 工作流程設計 | Bonus | PASS | git-workflow.*、PR template | 單人示範，沒有捏造多人 review |
 | SAM IaC | Bonus | PASS | template.yaml、sam-validate.txt、sam-build.txt | validate/build，不等於雲端可用證明 |
@@ -51,6 +53,14 @@
 | `python -m scripts.audit_project` | 本地連結與常見秘密格式無錯誤 | audit.json |
 
 weather-live job 使用 continue-on-error，避免公共服務暫時不可用阻擋核心 CRUD；**workflow 綠燈不代表天氣 live 通過**。必須讀取該次 weather-evidence 中的 status。UI 使用 mock 的天氣回應也不會列作真實外部 API 證據。
+
+## 已完成補驗與證據
+
+- `pytest`：61 passed；src coverage 98%。`ruff`、依賴完整性、JS syntax、offline audit、SAM validate/build 均成功。
+- 本地啟動器：已用不存在的繼承 AWS_PROFILE 實測，能隔離 AWS 身分、啟動 Moto／API／前端、完成 CRUD，Ctrl+C 後刪除 token，console 不列印權杖。
+- 前端：[桌機截圖](screenshots/desktop.png)、[手機截圖](screenshots/mobile.png)、[自動化檢查](evidence/frontend.json)。圖中權杖欄已清空，資料為測試建立的示範任務。
+- 天氣：[CI 原始成功 JSON](evidence/weather-live-ci.json)，真實 Open-Meteo geocoding 與 current 回應；不是 fixture。原本本地網路逾時仍保留於 weather-live.json / weather-live.txt。
+- CI provenance：[job、step、artifact ID 與 SHA256](evidence/github-revision-ci.json)。下載的 screenshots／JSON 為該 run 的原始 artifact，沒有重製成假成功。
 
 ## 剩餘界線
 

@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "scope": "Local frontend + real HTTP + Moto (not AWS)",
+  "checks": [
+    "Connected frontend to actual local HTTP API",
+    "Created and listed task through browser",
+    "Edited title through browser",
+    "Updated task status through browser and read it back via HTTP",
+    "390px mobile viewport has no horizontal overflow",
+    "Deleted task through browser",
+    "Failed reconnect clears stale workspace data",
+    "Rendered unauthorized error returned by real backend",
+    "No browser JavaScript runtime errors"
+  ]
+}

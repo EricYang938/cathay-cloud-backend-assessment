@@ -49,7 +49,7 @@ pytest --cov=src --cov-report=term-missing
 python -m scripts.smoke_test http://127.0.0.1:8001
 ```
 
-pytest 自行啟動獨立 Moto :18000 和 API :8001，請先停掉手動啟動的 :8001；不支援平行執行。無需真實 AWS credentials。UI 驗證另需 `pip install -r requirements-ui.txt` 及 `playwright install chromium`，執行 `python -m scripts.verify_frontend`，不要與 pytest 同時執行（共用測試 port）。本次 Chromium 啟動遭環境 socket 權限限制，瀏覽器驗收為 BLOCKED，非 PASS。
+pytest 自行啟動獨立 Moto :18000 和 API :8001，請先停掉手動啟動的 :8001；不支援平行執行。無需真實 AWS credentials。UI 驗證另需 `pip install -r requirements-ui.txt` 及 `playwright install chromium`，執行 `python -m scripts.verify_frontend`，不要與 pytest 同時執行（共用測試 port）。初次本地 Chromium 啟動曾受 socket 權限限制；後續已在 GitHub Actions 完成真實瀏覽器驗收，結果與截圖見 acceptance-report.md。
 
 ## 未來可選：AWS 部署（本次不執行）
 

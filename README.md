@@ -125,7 +125,7 @@ weather 指令失敗會退出非零並留下 BLOCKED 證據，不會把 mock 當
 
 Push / PR / manual dispatch 觸發三個 job：quality（lint、單元／HTTP 整合、SAM validate/build）、frontend（Chromium 操作與截圖）、weather-live（真實供應者查詢；網路結果為 advisory 並獨立記錄）。沒有 CD 到 AWS。
 
-首次上傳版本已取得 [真實 CI 成功紀錄](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42474750413)。本次修正的實際結果與證據位置見 [驗收報告](docs/acceptance-report.md)，Actions artifacts 以該 run 的版本為準。[查看最新 Actions](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions)。
+本次修正已取得 [真實 CI 成功紀錄](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42480510741)：quality、Chromium 前端驗證與 Open-Meteo 真實查詢均成功（受測 commit eb642eaa）。實際結果與證據位置見 [驗收報告](docs/acceptance-report.md)，Actions artifacts 以該 run 的版本為準。[查看最新 Actions](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions)。
 
 ## 10. Git Collaboration Workflow
 
@@ -143,13 +143,17 @@ AWS 設計包含指定 table/log ARN 的 Lambda role、HTTPS、節流與日誌�
 
 AI 協助需求拆解、程式、測試、文件與 reviewer 自審；精確模型版本不可核實。自動測試與 AI 自審不能冒充人工已審核。[真實開發紀錄](docs/ai-development-report.md)。
 
+### 已驗證的畫面與外部 API
+
+[桌機畫面](docs/screenshots/desktop.png)／[390px 手機畫面](docs/screenshots/mobile.png)／[前端自動化結果](docs/evidence/frontend.json)／[真實天氣回應](docs/evidence/weather-live-ci.json)。截圖來自 GitHub Actions，權杖欄已清空；這是本地 HTTP／Moto 的執行畫面，不是 AWS 展示網址。
+
 ## 13. Known Limitations
 
 - 本次不部署 AWS，沒有雲端 API URL、IAM 實測或 CloudWatch 執行證據。
 - Moto 重啟清空資料；Scan 清單沒有全域排序或並行快照保證。
 - 共用 Demo、無多使用者授權；無 SNS 通知、備份或完整 tracing。
 - 真實 Open-Meteo 可受外網、限流、同名城市第一筆匹配等因素影響；以 live artifact 判定。
-- Docker DynamoDB Local 尚未實測；瀏覽器與 live API 最新驗證狀態以 acceptance report 為準。
+- Docker DynamoDB Local 尚未實測；本次 Demo 與 CI 使用 Moto。瀏覽器與 live API 已在上述 CI 通過，公共服務未來仍可能暫時不可用。
 - Repo 為 private，面試官存取權需要作者安排。
 
 ## 14. Future Improvements

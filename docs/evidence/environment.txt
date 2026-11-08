@@ -1,3 +1,6 @@
+HISTORICAL: first-generation environment, before GitHub reconnection and CI re-verification.
+Current results: github-revision-ci.json, frontend.json and weather-live-ci.json.
+
 Date: 2026-11-08 (Asia/Taipei)
 Python: 3.12.14
 GitHub CLI: not logged in

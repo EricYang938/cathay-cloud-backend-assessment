@@ -21,3 +21,5 @@ AI 可快速建立一致的初稿並修正可重現錯誤，但仍可能選錯�
 ## 本次重新驗收與修正
 
 已讀取遠端 main（2c8427924d2bec343d985aec3f7333dd586ce638）與真實 Actions：原有 CI 成功，deploy job 為 skipped。修正文檔過時狀態、移除 AWS deploy workflow、新增無 AWS 的本地啟動器與 CI 瀏覽器／live-weather 證據流程；修正重新連線失敗後殘留可點選舊任務的問題。前端 mock 與真實網路結果分開記錄，僅依後續 CI 的實際結果更新驗收。
+
+後續已實際核對 PR #1 的 CI run 42480510741：quality、frontend、weather-live 通過，並下載原始截圖與 JSON 回存 Repository，保留 artifact ID、digest、受測 commit。初次本地無法啟動 Chromium 的限制，透過真實 GitHub runner 補驗；沒有以靜態圖片代替瀏覽器操作。
