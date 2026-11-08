@@ -138,33 +138,3 @@ AI 協助需求拆解、程式、測試、文件與 reviewer 自審；精確模�
 ### 已驗證的畫面與外部 API
 
 [桌機畫面](docs/screenshots/desktop.png)／[390px 手機畫面](docs/screenshots/mobile.png)／[前端自動化結果](docs/evidence/frontend.json)／[真實天氣回應](docs/evidence/weather-live-ci.json)。截圖來自 GitHub Actions，權杖欄已清空；這是本地 HTTP／Moto 的執行畫面，不是 AWS 展示網址。
-
-## 13. Known Limitations
-
-- 本次不部署 AWS，沒有雲端 API URL、IAM 實測或 CloudWatch 執行證據。
-- Moto 重啟清空資料；Scan 清單沒有全域排序或並行快照保證。
-- 共用 Demo、無多使用者授權；無 SNS 通知、備份或完整 tracing。
-- 真實 Open-Meteo 可受外網、限流、同名城市第一筆匹配等因素影響；以 live artifact 判定。
-- Docker DynamoDB Local 尚未實測；本次 Demo 與 CI 使用 Moto。瀏覽器與 live API 已在上述 CI 通過，公共服務未來仍可能暫時不可用。
-- Repo 為 private，面試官存取權需要作者安排。
-
-## 14. Future Improvements
-
-有需求時才新增 Cognito/JWT、owner 分區／Query/GSI、Secrets Manager、備份、HTTPS 靜態網站託管、監控通知與經授權的 CD；不為本次題目引入 Kubernetes 或不必要雲端資源。
-
-## 15. Assessment Requirements Mapping
-
-| 要求 | 交付 | 驗收界線 |
-|---|---|---|
-| Python 程式 | src/、tests/ | 可本地啟動與測試 |
-| 雲端後端設計／圖 | template.yaml、architecture.png | 已設計與 build，未部署 |
-| 情境／功能／選型 | 本 README、architecture.md | 對照實作 |
-| 原始碼 Repo 或 ZIP | 本 Repository | private，需授權或交 ZIP |
-| 前端 | frontend/、verify_frontend.py | 真實 HTTP 操作；證據見 CI artifact |
-| 第三方 REST API | weather.py、verify_weather.py | mock 與 live 結果分開 |
-| CI/CD 圖 | CI workflow、cicd.png | CI 實作；AWS CD 本次不做 |
-| 多人 Git 流程 | git-workflow.*、PR template | 單人設計示範，非實際多人團隊 |
-| IaC | template.yaml | SAM validate/build，不等於部署 |
-| AI 說明 | ai-development-report.md | 真實用途與限制 |
-
-[驗收報告](docs/acceptance-report.md)／[提交郵件草稿](docs/submission-email.md)。
