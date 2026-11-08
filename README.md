@@ -109,7 +109,7 @@ weather 指令失敗會退出非零並留下 BLOCKED 證據，不會把 mock 當
 
 ## 8. AWS Architecture / Deployment Scope
 
-交付 template.yaml、架構圖、選型理由及 SAM validate/build。本次依使用者決定**不部署 AWS**，因此不要求準備帳號、OIDC、密碼或付費資源。已移除部署 workflow；所有現行 CI 工作都不含 AWS 認證與部署步驟。[未來可選的部署參考](docs/deployment.md)。
+所有現行 CI 工作都不含 AWS 認證與部署步驟。[未來可選的部署參考](docs/deployment.md)。
 
 ## 9. CI Workflow
 
@@ -117,7 +117,7 @@ weather 指令失敗會退出非零並留下 BLOCKED 證據，不會把 mock 當
 
 Push / PR / manual dispatch 觸發三個 job：quality（lint、單元／HTTP 整合、SAM validate/build）、frontend（Chromium 操作與截圖）、weather-live（真實供應者查詢；網路結果為 advisory 並獨立記錄）。沒有 CD 到 AWS。
 
-本次修正已取得 [真實 CI 成功紀錄](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42480510741)：quality、Chromium 前端驗證與 Open-Meteo 真實查詢均成功（受測 commit eb642eaa）。實際結果與證據位置見 [驗收報告](docs/acceptance-report.md)，Actions artifacts 以該 run 的版本為準。[查看最新 Actions](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions)。
+
 
 ## 10. Git Collaboration Workflow
 
