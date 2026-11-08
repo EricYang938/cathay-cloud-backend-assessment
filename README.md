@@ -1,13 +1,5 @@
 # Cloud Task Management System
 
-國泰金控「雲端技術暨專案實習生」實作作品。以 Python 3.12 實作任務管理 RESTful API，提供可本地執行的前端、AWS Serverless 架構設計與 Infrastructure as Code。
-
-**本次交付不部署 AWS，也不需要 AWS 帳號、Access Key 或 Docker 才能執行本地 Demo。** AWS 是本作品選用的架構方案，並非原始題目指定的平台。依使用者提供的原始題目，實際部署未被明列為必要條件；不將架構設計、SAM build 或 Moto 測試宣稱成雲端部署成功。
-
-Repository：https://github.com/EricYang938/cathay-cloud-backend-assessment
-
-> Repository 目前為 private，面試官必須取得存取權，或使用提供的原始碼 ZIP。沒有把私人 Repo 連結當作任何人都能開啟的公開網址。
-
 ## 1. Project Introduction / Application Scenario
 
 管理示範工作事項：建立待辦、追蹤進度、完成與刪除任務；另可查詢指定城市天氣，方便規劃外出事項。只放示範資料，不處理真實金融客戶資料。
