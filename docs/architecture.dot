@@ -1,33 +1,34 @@
 digraph G {
-      graph [rankdir=TB, bgcolor="#f8fbf8", pad="0.4", nodesep="0.5", ranksep="0.7",
-             label="Cloud Task Management | AWS serverless demo",
-             labelloc=t, fontsize=24, fontname="DejaVu Sans"];
-      node [shape=box, style="rounded,filled", fillcolor="white", color="#b9cec2",
-            fontname="DejaVu Sans", fontsize=13, margin="0.2,0.15"];
+      graph [rankdir=TB, bgcolor="#f8fbf8", pad="0.4", fontsize=22,
+             label="Cloud Tasks | local execution + AWS design", labelloc=t];
+      node [shape=box, style="rounded,filled", fillcolor=white, color="#7aa991",
+            fontname="DejaVu Sans", margin="0.2,0.15"];
       edge [fontname="DejaVu Sans", fontsize=10, color="#446856"];
-      browser [label="Browser / static frontend\nLocal :8080 (not cloud hosted)"];
-      weather [label="External: Open-Meteo\nGeocoding + current weather"];
-      github [label="GitHub Actions\nCI + opt-in CD (not run remotely)"];
-      subgraph cluster_aws {
-        label="AWS boundary | designed, NOT deployed"; color="#7aa991"; style=rounded;
-        gateway [label="API Gateway HTTP API\nHTTPS / exact-origin CORS / throttle"];
-        lambda [label="Python 3.12 Lambda\nValidation / services\nBearer demo token"];
-        db [label="DynamoDB\nOn-demand / UUID key / atomic updates"];
-        logs [label="CloudWatch\n14-day logs / metrics / alarms"];
-        iam [label="Lambda IAM role\nTable CRUD + Scan only\nWrite own log streams only"];
-        oidc [label="Existing OIDC deployment role\nRepository + environment scoped"];
-        sam [label="SAM / CloudFormation\nDeploy template + artifacts"];
+      browser [label="Browser / static frontend"];
+      actions [label="GitHub Actions CI\nTests / browser / SAM checks\nNo AWS access"];
+      weather [label="External Open-Meteo\nHTTPS geocoding + current weather"];
+      subgraph cluster_local {
+        label="Implemented local path | loopback only"; color="#7aa991";
+        localapi [label="Python local HTTP adapter\nSame Lambda handler / services / validation"];
+        moto [label="Moto DynamoDB emulator\nDisposable demo data"];
       }
-      browser -> gateway [label="HTTPS + Bearer token"];
-      gateway -> lambda [label="API requests / HTTP v2 event"];
+      subgraph cluster_aws {
+        label="AWS design only | NOT deployed"; color="#c49a60";
+        gateway [label="API Gateway HTTP API\nHTTPS / exact CORS / throttle"];
+        lambda [label="Python 3.12 Lambda\nRouter / services / token checks"];
+        db [label="DynamoDB\nUUID / conditional updates"];
+        logs [label="CloudWatch\n14-day logs / metrics / alarms"];
+        iam [label="Execution IAM role\nSpecific table CRUD + Scan\nWrite own log streams"];
+      }
+      browser -> localapi [label="HTTP + demo token"];
+      localapi -> moto [label="boto3 / read + write"];
+      localapi -> weather [label="HTTPS / timeout"];
+      browser -> gateway [style=dashed,label="Designed HTTPS API requests"];
+      gateway -> lambda [label="HTTP v2 event"];
       lambda -> db [label="AWS SDK / read + write"];
+      lambda -> weather [style=dashed,label="Designed HTTPS integration"];
       lambda -> logs [label="status / latency / request ID"];
-      gateway -> logs [label="access status / latency"];
-      iam -> lambda [label="assumed execution role", style=dashed];
-      lambda -> weather [label="HTTPS / bounded timeouts"];
-      github -> oidc [label="OIDC federation (no access keys)"];
-      oidc -> sam [label="authorized deployment"];
-      sam -> lambda [label="build / update", style=dashed];
-      sam -> gateway [style=dashed, label="provision"];
-      sam -> db [style=dashed, label="provision"];
+      gateway -> logs [label="access logs"];
+      iam -> lambda [style=dashed,label="assumed role"];
+      actions -> localapi [style=dotted,label="verify local HTTP + browser"];
     }

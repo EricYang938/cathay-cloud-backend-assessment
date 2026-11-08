@@ -1,7 +1,7 @@
 {
   "status": "PASS",
-  "local_links_checked": 37,
-  "source_files_scanned": 24,
+  "local_links_checked": 24,
+  "source_files_scanned": 26,
   "issues": [],
   "scope": "Local links and common AWS ID/private-key patterns only; not a full secret audit"
 }

@@ -2,7 +2,7 @@
 
 ![AWS architecture](architecture.png)
 
-**狀態：已實作程式與 SAM，AWS 尚未部署；圖中雲端資源為目標架構。**
+**本次依使用者決定不部署 AWS；圖中雲端資源為目標架構。** 本地可執行路徑使用 Moto，CI 僅驗證程式／前端／IaC，不會建立 AWS 資源。
 
 瀏覽器從本地靜態伺服器載入前端，經 HTTPS 呼叫 API Gateway。HTTP v2 事件交給 Python Lambda 的 Router，驗證輸入後經 Service、Repository 存取 DynamoDB。天氣服務獨立，只在 `/weather` 發出固定網域的 HTTPS 呼叫，不影響任務路由。CloudWatch 收集請求 ID、狀態碼、延遲，不記錄權杖、內容或 exception message。
 

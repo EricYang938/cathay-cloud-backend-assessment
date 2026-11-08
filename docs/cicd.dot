@@ -1,25 +1,17 @@
 digraph G {
-      graph [rankdir=TB, bgcolor="#f8fbf8", pad="0.4",
-             label="CI / CD | configured, remote runs blocked",
-             labelloc=t, fontsize=22];
-      node [shape=box, style="rounded,filled", fillcolor=white, color="#7aa991",
-            fontname="DejaVu Sans",
-            margin="0.2,0.15"];
-      edge [fontname="DejaVu Sans", fontsize=10];
-      push [label="Push / Pull Request"];
-      install [label="Python 3.12 / locked dependencies"];
-      checks [label="Ruff lint + format / pytest\nSAM validate --lint + build"];
-      artifacts [label="Upload test results"];
-      deploytrigger [label="main push / manual dispatch"];
-      verify [label="Re-run lint / tests / template validation"];
-      gate [shape=diamond,label="ENABLE_AWS_DEPLOY=true\n+ main + aws-demo environment"];
-      oidc [label="Existing scoped AWS OIDC role"];
-      deploy [label="SAM build / deploy"];
-      smoke [label="HTTP CRUD smoke test"];
-      push -> install -> checks -> artifacts;
-      deploytrigger -> verify -> gate;
-      gate -> oidc [label="yes"];
-      oidc -> deploy -> smoke;
-      skip [label="Skip deployment (default)"];
-      gate -> skip [label="no"];
+      graph [rankdir=TB,bgcolor="#f8fbf8",pad="0.4",fontsize=22,
+             label="CI workflow | AWS CD excluded",labelloc=t];
+      node [shape=box,style="rounded,filled",fillcolor=white,color="#7aa991",
+            fontname="DejaVu Sans",margin="0.2,0.15"];
+      edge [fontname="DejaVu Sans",fontsize=10];
+      trigger [label="Push / PR / manual dispatch"];
+      quality [label="quality\nLint / pytest / audit\nSAM validate + build"];
+      frontend [label="frontend\nChromium + local HTTP API + Moto\nCRUD / errors / mobile width"];
+      weather [label="weather-live (advisory)\nReal HTTPS calls\nRecord PASS or BLOCKED"];
+      results [label="Test results artifact"];
+      shots [label="Frontend JSON + desktop/mobile screenshots"];
+      live [label="Weather JSON artifact\nGreen workflow is NOT proof of live success"];
+      trigger -> quality -> results;
+      trigger -> frontend -> shots;
+      trigger -> weather -> live;
     }

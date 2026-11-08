@@ -5,6 +5,7 @@ let editing = null, cursor = null, tasks = [], busy = false, connected = false;
 let connection = null;
 function message(text, error = false) { $("message").textContent = text; $("message").className = error ? "error" : ""; }
 async function api(path, method = "GET", body) {
+  if (!connection) throw new Error("請先連接工作空間。");
   const base = connection.base;
   const result = await fetch(base + path, {method, headers: {"Authorization": "Bearer " + connection.token,
     ...(body ? {"Content-Type": "application/json"} : {})}, body: body ? JSON.stringify(body) : undefined,
@@ -52,6 +53,7 @@ function render() {
 }
 $("connect").onclick = () => action(async () => {
   connected = false;
+  connection = null; tasks = []; cursor = null; resetForm(); render();
   const url = new URL($("api").value.trim());
   const local = ["localhost", "127.0.0.1"].includes(url.hostname);
   if (url.protocol !== "https:" && !(local && url.protocol === "http:")) throw new Error("雲端 API 必須使用 HTTPS。");

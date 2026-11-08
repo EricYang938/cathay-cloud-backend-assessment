@@ -2,11 +2,16 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
   quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AWS_EC2_METADATA_DISABLED: 'true'
+      SAM_CLI_TELEMETRY: '0'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -14,17 +19,59 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: python -m pip install -r requirements-lock.txt
+      - run: python -m pip check
       - run: ruff check .
       - run: ruff format --check .
+      - run: node --check frontend/app.js
+      - run: python -m scripts.audit_project
       - run: pytest --cov=src --cov-report=term-missing --junitxml=test-results.xml
-        env:
-          AWS_EC2_METADATA_DISABLED: 'true'
       - run: sam validate --lint --region ap-northeast-1
-        env:
-          AWS_EC2_METADATA_DISABLED: 'true'
       - run: sam build
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
           path: test-results.xml
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -r requirements-lock.txt -r requirements-ui.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: python -m scripts.verify_frontend
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-evidence
+          path: |
+            docs/evidence/frontend.json
+            docs/screenshots/*.png
+  weather-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Check real weather provider (advisory network check)
+        id: weather
+        continue-on-error: true
+        run: python -m scripts.verify_weather
+      - name: Summarize external check
+        if: always()
+        env:
+          CHECK_OUTCOME: ${{ steps.weather.outcome }}
+        run: |
+          echo "Open-Meteo live check: $CHECK_OUTCOME. Read weather-evidence for PASS/BLOCKED; workflow success alone is not live API evidence." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: weather-evidence
+          path: docs/evidence/weather-live.json

@@ -1,71 +1,67 @@
-# 實作驗收報告
+# 實作重新驗收報告
 
-驗收日期：2026-11-08（Asia/Taipei）。依使用者提供的任務書逐項核對；未取得完整官方題目原件，因此「符合要求」判斷限於該任務書列出的要求。執行方式與完整結果見下方證據。
+日期：2026-11-08（Asia/Taipei）。基準：遠端 main `2c8427924d2bec343d985aec3f7333dd586ce638`，與本地基準 commit 相同。依使用者最早貼出的原始題目與完整任務書核對；使用者後續明確決定不部署 AWS，此決定取代任務書中的實際部署目標。
 
-**結論：可交付原始碼 ZIP、Python 後端、架構圖、選型說明與本地驗證證據；尚不能宣稱已完成 AWS 部署、GitHub CI 或六項加分全部驗收。** 原始必要交付的程式／文件／圖／ZIP 已具備；若官方另要求公開 Git URL 或實際雲端網址，仍需補驗。這不是以程式碼生成替代驗收。
+**本次交付範圍：可執行 Python、雲端架構設計／圖、情境與選型說明、Git Repository、單元／本地 HTTP 整合、CI、前端及外部 API 程式。AWS 仍是設計方案，不是已部署系統。** 無法保證官方未提供的評分標準，亦不把後來擴充任務書的工程目標當作原始題目明文規定。
+
+## 真實遠端證據
+
+- Repository 已存在且以 EricYang938 授權讀寫；目前 private，面試官需取得存取權或另收 ZIP。
+- [原始版本 CI 成功](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42474750413)：quality 的 dependency install、Ruff、pytest、SAM validate/build、artifact 全部成功。
+- [舊 opt-in workflow](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42474750388)：verify 成功，但 **deploy job skipped**，不是 AWS 成功。本次移除該 workflow，沒有 AWS credentials／deploy 步驟。
+- [本次修正的真實 CI 成功](https://github.com/EricYang938/cathay-cloud-backend-assessment/actions/runs/42480510741)，受測 commit：`eb642eaa672b6007a4012411e5b62a6b0c6ed0bb`。quality、frontend、weather-live 全部成功；已額外核實 weather step 本身成功且 JSON.status=PASS，不只看 workflow 綠燈。
+- [修正 PR #1](https://github.com/EricYang938/cathay-cloud-backend-assessment/pull/1) 提供實際 feature → PR → CI 紀錄；未宣稱其他人已 review 或合併。
+- CI runner：Python 3.12、Chromium；前端真實本地 HTTP／Moto 操作通過，Open-Meteo 真實 HTTPS 回應通過。這不涉及 AWS 部署。
 
 ## Requirement Matrix
 
 | Requirement | Type | Status | Evidence | Issue |
 |---|---|---|---|---|
-| Python 原始碼可執行 | Mandatory | PASS | src/；[pytest](evidence/pytest.txt) | Python 3.12 全新 venv 執行 |
-| 應用情境說明完整 | Mandatory | PASS | [README](../README.md) | 示範任務管理，不用真實金融資料 |
-| 主要功能說明 | Mandatory | PASS | [API 文件](api-documentation.md)、src/ | 端點與回應對照實作 |
-| 雲端架構圖完整且可閱讀 | Mandatory | PASS | [PNG](architecture.png)、[設計說明](architecture.md) | 明確標示未部署與 AWS／外部邊界 |
-| AWS 選型理由完整 | Mandatory | PASS | README 選型表、architecture.md | 含 Lambda/EC2、DynamoDB/RDS 與成本取捨 |
-| Git Repository 或 ZIP | Mandatory | PASS | 完整 ZIP，包含本地 .git 歷史 | GitHub 遠端受帳號限制；本地 clone 後 61 項測試通過，見 evidence/packaging.txt |
-| 前端程式與實際操作 | Bonus | BLOCKED | frontend/、[瀏覽器啟動紀錄](evidence/frontend-run.txt) | JS 語法檢查通過；Chromium socket 被環境拒絕，未驗證互動／響應式，無操作截圖 |
-| 第三方 RESTful API 真實整合 | Bonus | BLOCKED | src/services/weather.py、[live 結果](evidence/weather-live.txt) | mock 含正常／timeout／HTTP errors；實際網路逾時，不能判 PASS |
-| CI/CD 圖與實際配置一致 | Bonus | PASS | [流程圖](cicd.png)、.github/workflows/ | 人工對照檔案；不是遠端執行成功 |
-| Git 多人協作工作流程 | Bonus | PASS | [流程文件](git-workflow.md)、[圖](git-workflow.png) | 單人模擬設計，沒有實際多人 review／PR |
-| SAM IaC 語法與建置 | Bonus | PASS | [validate](evidence/sam-validate.txt)、[build](evidence/sam-build.txt) | 只驗證 template/build，不代表 cloud runtime |
-| AI 使用說明 | Bonus | PASS | [開發報告](ai-development-report.md) | 真實說明 AI 自審；使用者人工審查 NOT TESTED |
-| 單元測試 | Engineering Enhancement | PASS | pytest / JUnit XML | CRUD、驗證、錯誤、Auth、CORS、weather mocks |
-| HTTP API 整合測試 | Engineering Enhancement | PASS | tests/integration/test_http.py；pytest | 真實 HTTP → handler → boto3 → Moto；非 AWS |
-| 資料庫寫入與獨立用戶端讀回 | Engineering Enhancement | PASS | test_separate_client_reads_persisted_item | 只有本地 Moto 證據，雲端讀回 BLOCKED |
-| Lint / format / JS syntax | Engineering Enhancement | PASS | [Lint](evidence/lint.txt)、[JS](evidence/js-syntax.txt) | 不等於瀏覽器互動通過 |
-| 全新 Python 環境安裝 | Engineering Enhancement | PASS | [clean install](evidence/clean-install.txt)、[pip check](evidence/pip-check.txt) | requirements-lock.txt 記錄實際解出的版本 |
-| 常見硬編碼金鑰與私鑰掃描 | Engineering Enhancement | PASS | [offline audit](evidence/audit.json) | 只檢查常見格式，不保證涵蓋所有秘密 |
-| 部署文件可重現 | Engineering Enhancement | NOT TESTED | [部署手冊](deployment.md) | 本地路徑已測；AWS guided 步驟未實際部署 |
-| Lambda IAM 權限範圍 | Engineering Enhancement | PASS | template.yaml / SAM validate | 靜態審查限定 table/log ARN；雲端實際授權未驗證 |
-| 部署 OIDC Role 最小權限 | Engineering Enhancement | NOT IMPLEMENTED | deployment.md 設定指南 | 沒有建立／變更帳號 IAM；需管理者依 ARN 配置 |
-| README 本地圖片與相對檔案連結 | Engineering Enhancement | PASS | audit.json | 未驗證所有外部網址當下可用 |
-| GitHub Actions 真實成功 run | Engineering Enhancement | BLOCKED | [環境紀錄](evidence/environment.txt) | CLI 未登入，連接帳號與指定帳號不符；沒有 run URL |
-| 目標 GitHub Repo clone | Engineering Enhancement | BLOCKED | environment.txt | 遠端 404 可能是不存在或無權限，未捏造遠端完成 |
-| AWS 實際部署與 HTTPS smoke test | Engineering Enhancement | BLOCKED | environment.txt | 無 AWS credentials，未建立付費資源 |
-| AWS DynamoDB 雲端讀回 | Engineering Enhancement | BLOCKED | deployment.md 補驗步驟 | 不用 Moto 證據替代 |
-| Docker DynamoDB Local | Engineering Enhancement | NOT TESTED | compose.yaml | 此環境無 Docker executable |
-| CORS、14 天 logs、節流與 monitoring | Engineering Enhancement | PASS | template.yaml、test_auth_and_cors | 靜態範本／本地單元測試；雲端與 alarm 發送 NOT TESTED |
-| 企業登入與逐使用者隔離 | Engineering Enhancement | NOT IMPLEMENTED | README security | 本題展示採共用 token，未宣稱企業級 |
-| 提交郵件草稿 | Engineering Enhancement | PASS | [草稿](submission-email.md) | 尚未寄出，需填姓名／收件人 |
+| Python 原始碼可執行 | Mandatory | PASS | src/、tests/、docs/evidence/pytest.txt | 本地與遠端 quality 證據 |
+| 情境與功能說明 | Mandatory | PASS | README、api-documentation.md | 與實作對照 |
+| 雲端架構圖 | Mandatory | PASS | architecture.png / svg / dot | 清楚標示未部署及 AWS 邊界 |
+| AWS 服務選型理由 | Mandatory | PASS | README 選型表、architecture.md | Lambda/EC2、DynamoDB/RDS、成本與維運取捨 |
+| Git Repo 或 ZIP | Mandatory | PASS | 本 Repository、本地 Git 歷史 | private，需作者提供面試官讀取權或 ZIP |
+| 前端 CRUD／錯誤／loading／響應式 | Bonus | PASS | evidence/frontend.json、screenshots/desktop.png、screenshots/mobile.png | CI Chromium CRUD、獨立 HTTP 狀態讀回、錯誤及 390px 無橫向溢位通過 |
+| 第三方 RESTful API | Bonus | PASS | evidence/weather-live-ci.json、weather-evidence artifact | 2026-11-08 20:29（台灣）真實 Taipei 查詢成功；本地逾時歷史另存 |
+| CI 與流程圖 | Bonus | PASS | .github/workflows/ci.yml、cicd.png、evidence/github-revision-ci.json | 新版 quality／frontend／weather-live 實際結果已核對 |
+| AWS CD | Bonus | NOT IMPLEMENTED | 無 deploy workflow | 依使用者決定排除，本次不做 |
+| 多人 Git 工作流程設計 | Bonus | PASS | git-workflow.*、PR template | 單人示範，沒有捏造多人 review |
+| SAM IaC | Bonus | PASS | template.yaml、sam-validate.txt、sam-build.txt | validate/build，不等於雲端可用證明 |
+| AI 使用說明 | Bonus | PASS | ai-development-report.md | AI 自審不是獨立人工審查 |
+| 單元與本地 HTTP 整合測試 | Engineering Enhancement | PASS | pytest.txt、test-results.xml | HTTP→handler→boto3→Moto，不是 AWS |
+| 獨立資料庫用戶端讀回 | Engineering Enhancement | PASS | test_separate_client_reads_persisted_item | 僅本地 Moto |
+| 新版一鍵本地 Demo | Engineering Enhancement | PASS | scripts/run_local.py、evidence/local-demo.txt | 啟動三個服務、HTTP CRUD、清除 token 已實測 |
+| 認證、CORS、驗證與安全錯誤 | Engineering Enhancement | PASS | 單元測試、src/app.py | 共用 token，無個人帳號隔離 |
+| 全新環境相依安裝 | Engineering Enhancement | PASS | requirements-lock.txt、clean-install.txt、真實 CI | 沒有假設使用者已有 Python 3.12 |
+| 本地圖片／連結與常見金鑰掃描 | Engineering Enhancement | PASS | scripts.audit_project、audit.json | 只掃常見格式，不是全面安全保證 |
+| 真實 AWS 部署、IAM、CloudWatch 與雲端持久化 | Engineering Enhancement | NOT TESTED | template.yaml／未來參考手冊 | 依使用者決定不執行，不列為本次未完成必做項 |
+| Docker DynamoDB Local | Engineering Enhancement | NOT TESTED | compose.yaml | 本次使用 Moto，Docker 非必要 |
+| 人工獨立 review／main protection | Engineering Enhancement | NOT TESTED | git-workflow.md 建議 | 未宣稱已由其他人審查或啟用設定 |
+| 提交郵件 | Engineering Enhancement | PASS | submission-email.md | 草稿，未寄出 |
 
-## Commands / Expected / Actual
+## 命令與驗收界線
 
-| 執行命令 | 預期 | 實際結果 | Status | 證據 |
-|---|---|---|---|---|
-| `python -m pip install -r requirements-dev.txt`（全新 venv） | 安裝成功 | 成功，依賴衝突修正後重跑 | PASS | evidence/clean-install.txt |
-| `python -m pip check`（全新 venv） | 無缺漏／衝突 | No broken requirements found | PASS | evidence/pip-check.txt |
-| `ruff check .` | 無錯誤 | All checks passed | PASS | evidence/lint.txt |
-| `ruff format --check .` | 格式一致 | all files formatted | PASS | evidence/lint.txt |
-| `pytest --cov=src --cov-report=term-missing --junitxml=docs/evidence/test-results.xml` | 所有測試成功 | 61 passed，src 覆蓋率 98% | PASS | evidence/pytest.txt、test-results.xml |
-| `sam validate --lint --region ap-northeast-1` | 範本有效 | valid SAM Template | PASS | evidence/sam-validate.txt |
-| `sam build` | Lambda 套件建置成功 | Build Succeeded | PASS | evidence/sam-build.txt |
-| `node --check frontend/app.js` | JS syntax 正確 | exit 0 | PASS | evidence/js-syntax.txt |
-| `python -m scripts.verify_frontend` | 實際瀏覽器 CRUD／響應式 | Chromium 啟動 socket Operation not permitted | BLOCKED | evidence/frontend-run.txt |
-| `WeatherService().query('Taipei')` | live API 回傳城市天氣 | provider timed out（受控 504） | BLOCKED | evidence/weather-live.txt |
-| `python -m scripts.audit_project` | 本地連結／圖檔與常見秘密檢查無錯誤 | 詳見 JSON | PASS | evidence/audit.json |
-| `gh auth status` | EricYang938 可寫入 | CLI 未登入；連接帳號 cfla999-tech | BLOCKED | evidence/environment.txt |
-| `sam deploy` | CloudFormation stack 成功 | 未執行，無 AWS credentials | BLOCKED | evidence/environment.txt |
-| `python -m scripts.smoke_test <cloud-url>` | 雲端 CRUD 成功 | 尚無 cloud URL，未執行 | NOT TESTED | deployment.md |
+| 命令／流程 | 預期結果 | 證據位置 |
+|---|---|---|
+| `pytest --cov=src --cov-report=term-missing` | 所有測試成功 | docs/evidence/pytest.txt |
+| `ruff check .`、`ruff format --check .` | 無 lint／格式錯誤 | docs/evidence/lint.txt |
+| `sam validate --lint`、`sam build` | 有效範本、建置成功 | sam-validate.txt、sam-build.txt |
+| `python -m scripts.run_local` + smoke | 不使用 AWS 的 Demo 可操作 | local-demo.txt（實際執行後才建立） |
+| `python -m scripts.verify_frontend` | Chromium CRUD、獨立 HTTP 狀態讀回、錯誤、390px 無溢位 | CI frontend-evidence artifact／frontend.json |
+| `python -m scripts.verify_weather` | 真實供應者成功或明確 BLOCKED | CI weather-evidence artifact／weather-live.json |
+| `python -m scripts.audit_project` | 本地連結與常見秘密格式無錯誤 | audit.json |
 
-單元測試不需要 AWS 帳號。HTTP smoke 流程為 POST → GET → PATCH → GET → DELETE → GET 404；已在本地 Moto 上實際執行。該測試不驗證 API Gateway、IAM、CloudWatch 或真實 AWS 的持久性。
+weather-live job 使用 continue-on-error，避免公共服務暫時不可用阻擋核心 CRUD；**workflow 綠燈不代表天氣 live 通過**。必須讀取該次 weather-evidence 中的 status。UI 使用 mock 的天氣回應也不會列作真實外部 API 證據。
 
-## 補驗順序
+## 已完成補驗與證據
 
-1. 使用者以 EricYang938 登入 GitHub 並確認 repo 權限；檢查是否已有內容，避免覆蓋；推送後取得 CI 成功 run URL。
-2. 在有已授權 AWS profile 的環境部署 SAM，記錄 Outputs、CloudWatch 與 smoke 結果，獨立讀回 DynamoDB，檢查費用後清理。
-3. 在可啟動 Chromium 的環境執行 verify_frontend；保留 desktop/mobile 截圖並確認無水平溢位。
-4. 於可連外的環境重試 Open-Meteo，保留來源、時間戳與實際回應；需要時依公司代理設定調整網路。
-5. 作者人工審查所有程式與說明，更新報告與郵件，只有有證據的新增成功才改 PASS。
+- `pytest`：61 passed；src coverage 98%。`ruff`、依賴完整性、JS syntax、offline audit、SAM validate/build 均成功。
+- 本地啟動器：已用不存在的繼承 AWS_PROFILE 實測，能隔離 AWS 身分、啟動 Moto／API／前端、完成 CRUD，Ctrl+C 後刪除 token，console 不列印權杖。
+- 前端：[桌機截圖](screenshots/desktop.png)、[手機截圖](screenshots/mobile.png)、[自動化檢查](evidence/frontend.json)。圖中權杖欄已清空，資料為測試建立的示範任務。
+- 天氣：[CI 原始成功 JSON](evidence/weather-live-ci.json)，真實 Open-Meteo geocoding 與 current 回應；不是 fixture。原本本地網路逾時仍保留於 weather-live.json / weather-live.txt。
+- CI provenance：[job、step、artifact ID 與 SHA256](evidence/github-revision-ci.json)。下載的 screenshots／JSON 為該 run 的原始 artifact，沒有重製成假成功。
 
-截止依任務書為 **2026-11-09 12:00（台灣時間）**。本報告未將尚未執行的項目標成成功；不宣稱 GitHub URL 或公開網站目前可供面試官使用。
+## 剩餘界線
+
+本次不要求開 AWS 帳號，也不補雲端部署。提交前作者應確認私人 Repo 存取權、人工閱讀程式與架構說明，並把最新 Actions URL／artifacts 提供面試官。舊 evidence 的失敗紀錄屬歷史，不刪掉或改成假成功；新版證據以時間戳與 CI commit 為準。

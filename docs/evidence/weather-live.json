@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-11-08T12:25:54.018499+00:00",
+  "scope": "Real HTTPS Open-Meteo geocoding and current weather; no AWS",
+  "city": "Taipei",
+  "status": "BLOCKED",
+  "http_status": 504,
+  "error": {
+    "code": "WEATHER_TIMEOUT",
+    "message": "Weather provider timed out"
+  }
+}
