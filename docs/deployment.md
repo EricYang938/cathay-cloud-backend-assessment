@@ -1,4 +1,6 @@
-# AWS 與本機部署手冊
+# 本機執行與未來 AWS 部署參考
+
+**本次評估不部署 AWS。** 建議使用 README 的 `python -m scripts.run_local` 一次啟動 Demo；以下手動與 AWS 指令僅供架構說明或未來另行授權使用，不是交件前必做事項。現行 Repository 沒有 AWS deployment workflow。
 
 ## 本機（Python 3.12）
 
@@ -49,7 +51,7 @@ python -m scripts.smoke_test http://127.0.0.1:8001
 
 pytest 自行啟動獨立 Moto :18000 和 API :8001，請先停掉手動啟動的 :8001；不支援平行執行。無需真實 AWS credentials。UI 驗證另需 `pip install -r requirements-ui.txt` 及 `playwright install chromium`，執行 `python -m scripts.verify_frontend`，不要與 pytest 同時執行（共用測試 port）。本次 Chromium 啟動遭環境 socket 權限限制，瀏覽器驗收為 BLOCKED，非 PASS。
 
-## AWS 實際部署（本次 BLOCKED：無 credentials）
+## 未來可選：AWS 部署（本次不執行）
 
 需要 AWS 帳號、AWS CLI v2、Python 3.12、SAM CLI、可用區域配額與部署權限。先檢查預算並設定 AWS Budgets 提醒（提醒不是硬性封頂）。使用新 shell，清除本地 endpoint 與 testing credentials，登入已授權 profile，例如 SSO：
 
@@ -81,16 +83,13 @@ python -m scripts.smoke_test "$API_URL"
 
 **成本規劃是假設，不是報價。** 每月 10,000 次 API、每次 200 ms / 256 MB、小於 1 GB 資料／日誌、無大量天氣查詢與出口流量時，以 US$5/月作為 Demo 規劃預算並設定低額通知；實際可能高於預算。費用來源包括 HTTP API 請求、Lambda GB-second、DynamoDB 讀寫與儲存、CloudWatch logs、兩個 alarm、SAM S3 artifacts、網路傳出。不假設免費方案一定適用；區域與定價可能改變，部署前用 [AWS Pricing Calculator](https://calculator.aws/) 依實際用量估算。節流與 concurrency 不保證消費封頂。
 
-## GitHub Actions CD 設定（沒有實際執行）
+## 未來可選：CD 設計
 
-CI 預設在 push/PR 執行，CD 預設跳過。遠端帳號修復後：
+本次已移除 deploy.yml，CI 不取得 AWS 憑證、不提供 id-token:write，也不執行 sam deploy。原始題目的 CI/CD 加分以已實作的 CI 與真實執行證據呈現，不宣稱完成 CD。
 
-1. 管理者建立 GitHub OIDC provider 與部署 role（本專案不擅自建立）。Trust policy 限定 `aud=sts.amazonaws.com` 與 `sub=repo:EricYang938/cathay-cloud-backend-assessment:environment:aws-demo`，不能放寬成任意 repo。
-2. 建立 `aws-demo` environment，限制 main、設定 reviewer（如果方案支援），加密 secret `DEMO_TOKEN`；repo/environment vars 為 `ENABLE_AWS_DEPLOY=true`、`ALLOWED_ORIGIN`、`AWS_DEPLOY_ROLE_ARN`。
-3. 角色需要指定 stack 的 CloudFormation、指定 artifact bucket 的 S3 權限，以及範本資源管理權限。管理者應預先建立 bootstrap bucket、使用專用 CloudFormation service role，僅許可 PassRole 該 service role；CloudFormation 角色再只授予本 Demo 需要的 Lambda、Gateway、Table、Log、Alarm 與執行 role 管理權限。實際 ARN／stack 範圍依帳號填入，不能宣稱未設定的部署角色已符合最小權限。當前 deploy.yml 未傳 --role-arn，預設由 OIDC role 直接部署，需具對應資源權限；改 service role 時同時加入該參數並調整 PassRole，審核後才啟用。
-4. 合併 main 或手動 dispatch，verify job 先通過再 deploy，成功後 smoke test。沒有成功 run URL 前不可把 CI/CD 標 PASS。
+若未來另行授權部署，可設計專用 GitHub environment、限定 repo/environment 的 OIDC trust、最小權限部署 role 與受限 CloudFormation service role，再加入受控的 SAM deploy 與 smoke test。這只是未來方案，不是本次已實作／已授權內容。
 
-![CI/CD](cicd.png)
+![CI workflow](cicd.png)
 
 ## 監控
 

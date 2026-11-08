@@ -4,15 +4,17 @@
 
 您好：
 
-附件為本次實作作品 Cloud Task Management System 的完整 ZIP。專案以 Python 3.12 實作任務管理 RESTful API，設計 AWS Lambda、API Gateway、DynamoDB、IAM 與 CloudWatch 的 Serverless 後端，並提供 SAM IaC、雲端架構圖、繁體中文 README、測試與驗收紀錄。
+本次實作作品為 Cloud Task Management System，以 Python 3.12 實作任務管理 RESTful API，提供 AWS Serverless 後端架構圖、選型說明、SAM IaC、瀏覽器前端、第三方天氣 API 程式、GitHub Actions CI、Git 協作流程設計及 AI 輔助開發說明。
 
-另包含瀏覽器前端、Open-Meteo 天氣 API 程式、GitHub Actions CI/CD 設定、GitHub Flow 協作流程設計及 AI 輔助開發報告。本地 pytest、Lint 與 SAM validate/build 已通過；前端驗收結果與相關證據詳見 docs/acceptance-report.md。
+原始碼：https://github.com/EricYang938/cathay-cloud-backend-assessment
 
-本次環境沒有 AWS 部署憑證，因此尚未實際部署至 AWS。天氣 API 在交付環境連線逾時，已提供 mock 測試與錯誤處理結果；GitHub 目標帳號權限尚待修復，先以 ZIP 提供完整原始碼。以上限制均於驗收報告揭露，部署指令與補驗方法見 docs/deployment.md。
+Repository 目前為 private，將另行確認貴方存取權或提供完整原始碼 ZIP。README 提供不需 AWS 帳號的本地啟動方式，實際測試與 CI 證據請見 docs/acceptance-report.md 及 Actions artifacts。
+
+本次交付包含雲端架構設計與 IaC，依專案範圍不實際部署 AWS，因此沒有提供雲端展示網址；本地 DynamoDB 使用 Moto emulator，沒有將其宣稱為 AWS 雲端驗證。天氣 live 與瀏覽器結果以驗收報告為準，不把單元 mock 當作外部服務成功證據。
 
 敬請查收，謝謝。
 
 [請填姓名]
 [請填聯絡方式]
 
-寄送前確認：姓名、附件、面試官收件地址、ZIP 可解壓與驗收報告。若已完成 GitHub 或 AWS 補驗，請同步修改本信和 acceptance report，不保留過時狀態。此草稿不會自動寄送。
+寄送前請確認姓名、收件地址、存取權／附件與最新驗收結果。此信尚未寄出。

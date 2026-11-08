@@ -12,6 +12,13 @@ from src.repositories.dynamodb import DynamoRepository
 
 @pytest.fixture(autouse=True)
 def environment(monkeypatch):
+    for name in (
+        "AWS_PROFILE",
+        "AWS_DEFAULT_PROFILE",
+        "AWS_SESSION_TOKEN",
+        "AWS_LAMBDA_FUNCTION_NAME",
+    ):
+        monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
     monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
     monkeypatch.setenv("AWS_DEFAULT_REGION", "ap-northeast-1")

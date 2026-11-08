@@ -39,6 +39,14 @@ def main():
         "ALLOWED_ORIGIN": "http://localhost:8080",
         "DEMO_TOKEN": secrets.token_urlsafe(32),
     }
+    for key in (
+        "AWS_PROFILE",
+        "AWS_DEFAULT_PROFILE",
+        "AWS_SESSION_TOKEN",
+        "AWS_LAMBDA_FUNCTION_NAME",
+    ):
+        env.pop(key, None)
+        os.environ.pop(key, None)
     processes = []
     checks = []
     shots = ROOT / "docs/screenshots"
@@ -105,7 +113,14 @@ def main():
                 "document.querySelector('#message').textContent.includes('已完成')"
             )
             assert page.locator(".task-controls select").input_value() == "DONE"
-            checks.append("Updated task status through browser")
+            # Confirm persisted status from the independent HTTP client, not just the select value.
+            persisted = requests.get(
+                "http://127.0.0.1:8001/tasks",
+                headers={"Authorization": "Bearer " + env["DEMO_TOKEN"]},
+                timeout=5,
+            ).json()
+            assert persisted["items"][0]["status"] == "DONE"
+            checks.append("Updated task status through browser and read it back via HTTP")
             page.locator("#title").fill("準備面試與技術選型說明")
             page.locator("#description").fill("釐清 Serverless 的取捨，整理未部署項目。")
             page.locator("#status").select_option("IN_PROGRESS")
@@ -126,6 +141,8 @@ def main():
             page.locator("#connect").click()
             page.wait_for_function("document.querySelector('#message').classList.contains('error')")
             assert "token" in page.locator("#message").inner_text().lower()
+            assert page.locator(".task").count() == 0
+            checks.append("Failed reconnect clears stale workspace data")
             checks.append("Rendered unauthorized error returned by real backend")
             assert not errors, errors
             checks.append("No browser JavaScript runtime errors")

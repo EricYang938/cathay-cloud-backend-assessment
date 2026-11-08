@@ -1,0 +1,9 @@
+PASS: launcher started Moto + API + frontend using testing credentials.
+PASS: worked with a nonexistent inherited AWS_PROFILE; no AWS authentication.
+PASS: HTTP CRUD smoke sequence and frontend GET 200.
+PASS: token absent from console output; removed after Ctrl+C.
+Demo ready: http://localhost:8080
+API: http://127.0.0.1:8001
+Copy the token from local-state/demo-token.txt into the frontend.
+Moto is a local emulator: tasks disappear after shutdown. Ctrl+C to stop.
+Stopping local demo.
