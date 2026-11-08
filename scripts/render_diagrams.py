@@ -1,5 +1,3 @@
-"""Regenerate exact architecture diagrams with Graphviz (dot required)."""
-
 import subprocess
 from pathlib import Path
 
